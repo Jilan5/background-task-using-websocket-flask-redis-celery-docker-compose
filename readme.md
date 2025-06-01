@@ -44,7 +44,6 @@ This project uses **Flask-SocketIO** to enable real-time, bidirectional communic
 ## System Architecture
 
 ```mermaid
-%%{init: {'themeVariables': { 'background': '#ffffff' }}}%%
 graph TD
     Client["Client (Browser)"] -- WebSocket/HTTP --> FlaskApp["Flask Web App (SocketIO)"]
     FlaskApp -- Task Request --> CeleryWorker["Celery Worker"]
@@ -62,7 +61,6 @@ graph TD
 ## Container/Service Layout
 
 ```mermaid
-%%{init: {'themeVariables': { 'background': '#ffffff' }}}%%
 flowchart LR
     subgraph DockerCompose
         Web["Flask Web App"]
@@ -88,7 +86,6 @@ flowchart LR
 ## Feature Overview
 
 ```mermaid
-%%{init: {'themeVariables': { 'background': '#ffffff' }}}%%
 graph LR
     User["User"] --> Trigger["Trigger Task (HTTP/WebSocket)"]
     Trigger --> FlaskApp["Flask App"]
@@ -104,7 +101,6 @@ graph LR
 ## WebSocket Workflow
 
 ```mermaid
-%%{init: {'themeVariables': { 'background': '#ffffff' }}}%%
 sequenceDiagram
     participant User
     participant Browser
@@ -124,7 +120,6 @@ sequenceDiagram
 ## Tools & Technologies
 
 ```mermaid
-%%{init: {'themeVariables': { 'background': '#ffffff' }}}%%
 graph TD
     Flask --> Python
     Celery --> Python
