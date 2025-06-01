@@ -41,7 +41,94 @@ This project uses **Flask-SocketIO** to enable real-time, bidirectional communic
 - **Dashboard Updates:** Admin or user dashboards reflect the live state of background processing queues, worker status, and results.
 
 ---
+## System Architecture
 
+```mermaid
+graph TD
+    A[Client (Browser)] -- WebSocket/HTTP --> B[Flask Web App (SocketIO)]
+    B -- Task Request --> C[Celery Worker]
+    C -- Status/Result --> B
+    B -- WebSocket Event --> A
+    C -- Uses --> D[Redis (Broker)]
+    B -- DB Access --> E[PostgreSQL]
+    C -- DB Access --> E
+    C -- Monitored by --> F[Flower]
+    D -- Message Queue --> C
+```
+
+---
+
+## Container/Service Layout
+
+```mermaid
+flowchart LR
+    subgraph docker-compose
+        web[Flask Web App]
+        celery_worker[Celery Worker]
+        celery_beat[Celery Beat]
+        flower[Flower]
+        redis[Redis]
+        db[PostgreSQL]
+    end
+
+    web <--> redis
+    celery_worker <--> redis
+    celery_beat <--> redis
+    flower <--> redis
+    web <--> db
+    celery_worker <--> db
+    celery_beat <--> db
+    flower <--> celery_worker
+```
+
+---
+
+## Feature Overview
+
+```mermaid
+graph LR
+    A[User] --> B[Trigger Task (HTTP/WebSocket)]
+    B --> C[Flask App]
+    C --> D[Background Task via Celery]
+    D --> E[Task Progress/Result]
+    E --> C
+    C -- Real-Time Update --> A
+    D -- Monitored by --> F[Flower Dashboard]
+```
+
+---
+
+## WebSocket Workflow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Browser
+    participant FlaskApp
+    participant CeleryWorker
+
+    User->>Browser: Clicks "Start Task"
+    Browser->>FlaskApp: Sends HTTP/WebSocket request
+    FlaskApp->>CeleryWorker: Sends task to queue (via Redis)
+    CeleryWorker-->>FlaskApp: Task progress/status
+    FlaskApp-->>Browser: Emits WebSocket event with update
+    Browser-->>User: Shows real-time progress/result
+```
+
+---
+
+## Tools & Technologies
+
+```mermaid
+graph TD
+    Flask --> Python
+    Celery --> Python
+    Redis --> Celery
+    Flask-SocketIO --> Flask
+    Docker-Compose -->|Orchestrates| All[Services]
+    PostgreSQL --> Flask
+    Flower --> Celery
+```
 ## Quick Start
 
 ### 1. Clone the Repository
