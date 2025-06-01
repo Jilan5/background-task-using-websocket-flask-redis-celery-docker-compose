@@ -14,6 +14,34 @@ This repository provides a full-stack example project demonstrating how to run b
 
 ---
 
+## WebSocket Integration
+
+### How WebSocket is Used in This Project
+
+This project uses **Flask-SocketIO** to enable real-time, bidirectional communication between the server and browser clients. The integration is visible in `app.py` and the project’s codebase, where a `socketio` server object is created and used to run the Flask app with WebSocket support. When background tasks are triggered and processed by Celery, the results or progress updates can be emitted to clients instantly over active WebSocket connections.
+
+#### Key Points:
+- The `socketio` object is initialized and runs the Flask app (see `app.py`).
+- When a background task completes or has progress, the backend can emit events to the frontend through WebSocket.
+- Clients connected via WebSocket receive real-time updates without needing to refresh or poll the server.
+
+### Benefits of WebSocket in Background Task Processing
+
+- **Real-Time Feedback:** Users can see the progress and results of background tasks immediately as they happen.
+- **Reduced Latency:** Instant updates are pushed from server to client, eliminating the need for repeated polling.
+- **Improved UX:** Users are kept informed about long-running operations, making the application more interactive and user-friendly.
+- **Scalability:** Efficiently handles many concurrent connections, making it suitable for dashboards and monitoring tools.
+
+### Example Use Cases for WebSocket Integration
+
+- **Task Status Tracking:** Notify users when their requested background task (e.g., data processing, file upload/analysis, report generation) has started, is in progress, and is completed.
+- **Progress Bars:** Update progress indicators in real-time as tasks make progress.
+- **Live Notifications:** Push alerts or messages to users when tasks encounter errors or succeed.
+- **Collaborative Apps:** Multiple users see updates as shared tasks progress (e.g., collaborative data analysis).
+- **Dashboard Updates:** Admin or user dashboards reflect the live state of background processing queues, worker status, and results.
+
+---
+
 ## Quick Start
 
 ### 1. Clone the Repository
