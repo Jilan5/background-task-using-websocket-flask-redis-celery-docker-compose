@@ -45,15 +45,15 @@ This project uses **Flask-SocketIO** to enable real-time, bidirectional communic
 
 ```mermaid
 graph TD
-    A[Client (Browser)] -- WebSocket/HTTP --> B[Flask Web App (SocketIO)]
-    B -- Task Request --> C[Celery Worker]
-    C -- Status/Result --> B
-    B -- WebSocket Event --> A
-    C -- Uses --> D[Redis (Broker)]
-    B -- DB Access --> E[PostgreSQL]
-    C -- DB Access --> E
-    C -- Monitored by --> F[Flower]
-    D -- Message Queue --> C
+    Client["Client (Browser)"] -- WebSocket/HTTP --> Flask[Flask Web App (SocketIO)]
+    Flask -- Task Request --> CeleryWorker[Celery Worker]
+    CeleryWorker -- Status/Result --> Flask
+    Flask -- WebSocket Event --> Client
+    CeleryWorker -- Uses --> Redis[Redis (Broker)]
+    Flask -- DB Access --> Postgres[PostgreSQL]
+    CeleryWorker -- DB Access --> Postgres
+    CeleryWorker -- Monitored by --> Flower[Flower]
+    Redis -- Message Queue --> CeleryWorker
 ```
 
 ---
@@ -63,22 +63,22 @@ graph TD
 ```mermaid
 flowchart LR
     subgraph docker-compose
-        web[Flask Web App]
-        celery_worker[Celery Worker]
-        celery_beat[Celery Beat]
-        flower[Flower]
-        redis[Redis]
-        db[PostgreSQL]
+        Web[Flask Web App]
+        CeleryWorker[Celery Worker]
+        CeleryBeat[Celery Beat]
+        Flower[Flower]
+        Redis[Redis]
+        DB[PostgreSQL]
     end
 
-    web <--> redis
-    celery_worker <--> redis
-    celery_beat <--> redis
-    flower <--> redis
-    web <--> db
-    celery_worker <--> db
-    celery_beat <--> db
-    flower <--> celery_worker
+    Web <--> Redis
+    CeleryWorker <--> Redis
+    CeleryBeat <--> Redis
+    Flower <--> Redis
+    Web <--> DB
+    CeleryWorker <--> DB
+    CeleryBeat <--> DB
+    Flower <--> CeleryWorker
 ```
 
 ---
@@ -87,13 +87,13 @@ flowchart LR
 
 ```mermaid
 graph LR
-    A[User] --> B[Trigger Task (HTTP/WebSocket)]
-    B --> C[Flask App]
-    C --> D[Background Task via Celery]
-    D --> E[Task Progress/Result]
-    E --> C
-    C -- Real-Time Update --> A
-    D -- Monitored by --> F[Flower Dashboard]
+    User[User] --> Trigger[Trigger Task (HTTP/WebSocket)]
+    Trigger --> Flask[Flask App]
+    Flask --> Celery[Background Task via Celery]
+    Celery --> Progress[Task Progress/Result]
+    Progress --> Flask
+    Flask -- Real-Time Update --> User
+    Celery -- Monitored by --> Flower[Flower Dashboard]
 ```
 
 ---
@@ -124,8 +124,8 @@ graph TD
     Flask --> Python
     Celery --> Python
     Redis --> Celery
-    Flask-SocketIO --> Flask
-    Docker-Compose -->|Orchestrates| All[Services]
+    FlaskSocketIO[Flask-SocketIO] --> Flask
+    DockerCompose[Docker-Compose] -->|Orchestrates| All[Services]
     PostgreSQL --> Flask
     Flower --> Celery
 ```
