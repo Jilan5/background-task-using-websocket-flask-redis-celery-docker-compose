@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+celery -A celery_app.celery worker --loglevel=info
+
+#!/bin/bash
+
+# set -o errexit
+# set -o nounset
+
+# watchfiles \
+#   --filter python \
+#   'celery -A celery_app.celery worker --loglevel=info'    # update
